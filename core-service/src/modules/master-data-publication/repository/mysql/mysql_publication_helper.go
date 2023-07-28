@@ -28,9 +28,24 @@ func filterPublicationQuery(params *domain.Request, binds *[]interface{}) string
 		query = fmt.Sprintf(`%s AND pub.created_by = ?`, query)
 	}
 
-	if v, ok := params.Filters["unit_id"]; ok && v != "" {
+	if v, ok := params.Filters["opd_name"]; ok && v != "" {
 		*binds = append(*binds, v)
-		query = fmt.Sprintf(`%s AND u.unit_id = ?`, query)
+		query = fmt.Sprintf(`%s AND units.name = ?`, query)
+	}
+
+	if v, ok := params.Filters["service_user"]; ok && v != "" {
+		*binds = append(*binds, v)
+		query = fmt.Sprintf(`%s AND ms.service_user = ?`, query)
+	}
+
+	if v, ok := params.Filters["technical"]; ok && v != "" {
+		*binds = append(*binds, v)
+		query = fmt.Sprintf(`%s AND ms.technical = ?`, query)
+	}
+
+	if params.StartDate != "" && params.EndDate != "" {
+		*binds = append(*binds, params.StartDate, params.EndDate)
+		query = fmt.Sprintf(`%s AND (DATE(pub.updated_at) BETWEEN ? AND ?)`, query)
 	}
 
 	return query

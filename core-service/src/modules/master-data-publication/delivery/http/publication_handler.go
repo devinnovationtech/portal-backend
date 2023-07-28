@@ -94,7 +94,10 @@ func (h *MasterDataPublicationHandler) Fetch(c echo.Context) error {
 	au := helpers.GetAuthenticatedUser(c)
 	params := helpers.GetRequestParams(c)
 	params.Filters = map[string]interface{}{
-		"status": c.QueryParam("status"),
+		"status":       c.QueryParam("status"),
+		"opd_name":     c.QueryParam("opd_name"),
+		"service_user": c.QueryParam("service_user"),
+		"technical":    c.QueryParam("technical"),
 	}
 
 	data, total, err := h.MdpUcase.Fetch(ctx, au, &params)
