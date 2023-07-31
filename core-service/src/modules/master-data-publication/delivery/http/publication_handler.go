@@ -235,7 +235,7 @@ func (h *MasterDataPublicationHandler) PortalFetch(c echo.Context) error {
 	params.Keyword = helpers.RegexReplaceString(c, c.QueryParam("q"), "")
 	params.Filters = map[string]interface{}{
 		"type":     helpers.RegexReplaceString(c, c.QueryParam("type"), ""),
-		"category": helpers.RegexReplaceString(c, c.QueryParam("cat"), ""),
+		"category": c.QueryParam("cat"),
 	}
 
 	res, err := h.MdpUcase.PortalFetch(ctx, &params)
