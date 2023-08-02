@@ -28,6 +28,11 @@ func filterMdsQuery(params *domain.Request, binds *[]interface{}) string {
 		query = fmt.Sprintf(`%s AND mds.created_by = ?`, query)
 	}
 
+	if v, ok := params.Filters["unit_id"]; ok && v != "" {
+		*binds = append(*binds, v)
+		query = fmt.Sprintf(`%s AND units.id = ?`, query)
+	}
+
 	if v, ok := params.Filters["opd_name"]; ok && v != "" {
 		*binds = append(*binds, v)
 		query = fmt.Sprintf(`%s AND units.name = ?`, query)
