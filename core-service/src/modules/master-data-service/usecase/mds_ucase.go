@@ -201,7 +201,7 @@ func (n *masterDataServiceUsecase) updateMdsSupport(ctx context.Context, mds dom
 	return
 }
 
-func (n *masterDataServiceUsecase) TabStatus(ctx context.Context, au *domain.JwtCustomClaims, params *domain.Request) (res []domain.TabStatusResponse, err error) {
+func (n *masterDataServiceUsecase) TabStatus(ctx context.Context, au *domain.JwtCustomClaims, params *domain.Request) (res []domain.TabStatusResponseMds, err error) {
 	params = filterByRoleAcces(au, params)
 	res, err = n.mdsRepo.TabStatus(ctx, params)
 	if err != nil {

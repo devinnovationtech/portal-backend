@@ -266,12 +266,16 @@ func (m *mysqlMdsRepository) Update(ctx context.Context, mds *domain.StoreMaster
 	return
 }
 
-func (m *mysqlMdsRepository) TabStatus(ctx context.Context, params *domain.Request) (res []domain.TabStatusResponse, err error) {
+func (m *mysqlMdsRepository) TabStatus(ctx context.Context, params *domain.Request) (res []domain.TabStatusResponseMds, err error) {
 	queryTabs := `
-		SELECT mds.status, count(mds.status)
+		SELECT mds.status, count(mds.status), ms.opd_name
 		FROM masterdata_services mds
 		LEFT JOIN users u
 		ON mds.created_by = u.id
+		LEFT JOIN main_services ms
+		ON mds.main_service = ms.id
+		LEFT JOIN units
+		ON ms.opd_name = units.id
 		WHERE mds.deleted_at is NULL
 	`
 
@@ -283,25 +287,26 @@ func (m *mysqlMdsRepository) TabStatus(ctx context.Context, params *domain.Reque
 	res, err = m.fetchTabs(ctx, query, binds...)
 
 	if err != nil {
-		return []domain.TabStatusResponse{}, err
+		return []domain.TabStatusResponseMds{}, err
 	}
 
 	return
 }
 
-func (m *mysqlMdsRepository) fetchTabs(ctx context.Context, query string, args ...interface{}) (result []domain.TabStatusResponse, err error) {
+func (m *mysqlMdsRepository) fetchTabs(ctx context.Context, query string, args ...interface{}) (result []domain.TabStatusResponseMds, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
 		logrus.Error(err)
 		return nil, err
 	}
 
-	result = make([]domain.TabStatusResponse, 0)
+	result = make([]domain.TabStatusResponseMds, 0)
 	for rows.Next() {
-		t := domain.TabStatusResponse{}
+		t := domain.TabStatusResponseMds{}
 		err = rows.Scan(
 			&t.Status,
 			&t.Count,
+			&t.UnitId,
 		)
 
 		if err != nil {

@@ -165,7 +165,7 @@ func filterByRoleAcces(au *domain.JwtCustomClaims, params *domain.Request) *doma
 	return params
 }
 
-func (n *masterDataPublicationUsecase) TabStatus(ctx context.Context, au *domain.JwtCustomClaims, params *domain.Request) (res []domain.TabStatusResponse, err error) {
+func (n *masterDataPublicationUsecase) TabStatus(ctx context.Context, au *domain.JwtCustomClaims, params *domain.Request) (res []domain.TabStatusResponseMds, err error) {
 	params = filterByRoleAcces(au, params)
 	res, err = n.mdpRepo.TabStatus(ctx, params)
 	if err != nil {

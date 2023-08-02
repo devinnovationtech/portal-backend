@@ -241,13 +241,19 @@ type MasterDataServiceEntityID struct {
 	AdditionalInformationID int64 `json:"additional_information_id"`
 }
 
+type TabStatusResponseMds struct {
+	Status string `json:"status"`
+	Count  int    `json:"count"`
+	UnitId int    `json:"unit_id"`
+}
+
 type MasterDataServiceUsecase interface {
 	Store(ctx context.Context, au *JwtCustomClaims, body *StoreMasterDataService) (err error)
 	Fetch(ctx context.Context, au *JwtCustomClaims, params *Request) (res []MasterDataService, total int64, err error)
 	Delete(ctx context.Context, ID int64) (err error)
 	GetByID(ctx context.Context, ID int64) (res MasterDataService, err error)
 	Update(context.Context, *StoreMasterDataService, int64) (err error)
-	TabStatus(ctx context.Context, au *JwtCustomClaims, params *Request) ([]TabStatusResponse, error)
+	TabStatus(ctx context.Context, au *JwtCustomClaims, params *Request) ([]TabStatusResponseMds, error)
 	Archive(ctx context.Context, au *JwtCustomClaims, params *Request) (res []MasterDataService, err error)
 }
 
@@ -258,7 +264,7 @@ type MasterDataServiceRepository interface {
 	Delete(ctx context.Context, ID int64) (err error)
 	GetByID(ctx context.Context, ID int64) (res MasterDataService, err error)
 	Update(context.Context, *StoreMasterDataService, *MasterDataServiceEntityID, *sql.Tx) (err error)
-	TabStatus(ctx context.Context, params *Request) (res []TabStatusResponse, err error)
+	TabStatus(ctx context.Context, params *Request) (res []TabStatusResponseMds, err error)
 	Archive(ctx context.Context, params *Request) (res []MasterDataService, err error)
 	CheckHasPublication(ctx context.Context, ID int64) (res MasterDataService, err error)
 	UpdateHasPublication(ctx context.Context, ID int64, HasPublication int8) (err error)
