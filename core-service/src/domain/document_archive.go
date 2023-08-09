@@ -13,6 +13,7 @@ type DocumentArchive struct {
 	Description string    `json:"description" validate:"required"`
 	Source      string    `json:"source"`
 	Mimetype    string    `json:"mimetype"`
+	Status      string    `json:"status"`
 	Category    string    `json:"category" validate:"required"`
 	CreatedBy   User      `json:"created_by"`
 	UpdatedBy   User      `json:"updated_by"`
@@ -34,12 +35,23 @@ type ListDocumentArchive struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
+type DocumentArchiveRequest struct {
+	Title       string `json:"title" validate:"required"`
+	Description string `json:"description" validate:"required"`
+	Source      string `json:"source" validate:"required"`
+	Mimetype    string `json:"mimetype" validate:"required"`
+	Status      string `json:"status" validate:"required,eq=DRAFT|eq=PUBLISHED|eq=ARCHIVED"`
+	Category    string `json:"category" validate:"required"`
+}
+
 // DocumentArchiveUsecase ...
 type DocumentArchiveUsecase interface {
 	Fetch(ctx context.Context, params *Request) ([]DocumentArchive, int64, error)
+	Store(ctx context.Context, body *DocumentArchiveRequest, createdBy string) error
 }
 
 // DocumentArchiveRepository ...
 type DocumentArchiveRepository interface {
 	Fetch(ctx context.Context, params *Request) ([]DocumentArchive, int64, error)
+	Store(ctx context.Context, body *DocumentArchiveRequest, createdBy string) error
 }

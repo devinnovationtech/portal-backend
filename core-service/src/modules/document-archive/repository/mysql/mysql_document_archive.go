@@ -4,9 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/sirupsen/logrus"
 )
 
@@ -89,5 +91,27 @@ func (r *mysqlDocumentArchiveRepository) Fetch(ctx context.Context, params *doma
 		return nil, 0, err
 	}
 
+	return
+}
+
+func (r *mysqlDocumentArchiveRepository) Store(ctx context.Context, body *domain.DocumentArchiveRequest, createdBy string) (err error) {
+	query := `INSERT document_archives SET title=?, description=?, excerpt=?, source=?, mimetype=?, category=?, status=?, created_by=?, created_at=?, updated_at=?`
+
+	stmt, err := r.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+	_, err = stmt.ExecContext(ctx,
+		body.Title,
+		body.Description,
+		helpers.MakeExcerpt(body.Description, 150),
+		body.Source,
+		body.Mimetype,
+		body.Category,
+		body.Status,
+		createdBy,
+		time.Now(),
+		time.Now(),
+	)
 	return
 }

@@ -21,5 +21,9 @@ func filterDocArchiveQuery(params *domain.Request) string {
 		query = fmt.Sprintf(`%s AND d.category = '%s'`, query, v)
 	}
 
+	if v, ok := params.Filters["status"]; ok && v != "" {
+		query = fmt.Sprintf(`%s AND d.status = '%s'`, query, v)
+	}
+
 	return query
 }

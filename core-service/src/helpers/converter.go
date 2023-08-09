@@ -71,3 +71,11 @@ func SlugGenerator(str string, identifier int64) string {
 	strSlug := strings.Join(strLower, "-")
 	return fmt.Sprintf("%s-%d", strSlug, identifier)
 }
+
+func MakeExcerpt(str string, forExcerptLength int) string {
+	if len(str) > forExcerptLength {
+		return str[:forExcerptLength]
+	}
+
+	return str
+}
