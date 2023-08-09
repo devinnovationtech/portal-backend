@@ -29,6 +29,7 @@ func (h *PublicDocumentArchiveHandler) Fetch(c echo.Context) error {
 	params := helpers.GetRequestParams(c)
 	params.Filters = map[string]interface{}{
 		"category": helpers.RegexReplaceString(c, c.QueryParam("cat"), ""),
+		"status":   "PUBLISHED",
 	}
 
 	// getting data from usecase
