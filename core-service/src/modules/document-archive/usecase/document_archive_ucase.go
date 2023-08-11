@@ -114,3 +114,11 @@ func (n *documentArchiveUsecase) Store(c context.Context, body *domain.DocumentA
 	err = n.documentArchiveRepo.Store(ctx, body, createdBy)
 	return
 }
+
+func (n *documentArchiveUsecase) Delete(c context.Context, ID int64) (err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	err = n.documentArchiveRepo.Delete(ctx, ID)
+	return
+}

@@ -115,3 +115,15 @@ func (r *mysqlDocumentArchiveRepository) Store(ctx context.Context, body *domain
 	)
 	return
 }
+
+func (r *mysqlDocumentArchiveRepository) Delete(ctx context.Context, ID int64) (err error) {
+	query := `DELETE FROM document_archives WHERE id=?`
+
+	res, err := r.Conn.ExecContext(ctx, query, ID)
+
+	rowsAffect, err := res.RowsAffected()
+	if rowsAffect == 0 {
+		err = domain.ErrNotFound
+	}
+	return
+}

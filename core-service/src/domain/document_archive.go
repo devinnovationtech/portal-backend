@@ -48,10 +48,12 @@ type DocumentArchiveRequest struct {
 type DocumentArchiveUsecase interface {
 	Fetch(ctx context.Context, params *Request) ([]DocumentArchive, int64, error)
 	Store(ctx context.Context, body *DocumentArchiveRequest, createdBy string) error
+	Delete(ctx context.Context, ID int64) error
 }
 
 // DocumentArchiveRepository ...
 type DocumentArchiveRepository interface {
 	Fetch(ctx context.Context, params *Request) ([]DocumentArchive, int64, error)
 	Store(ctx context.Context, body *DocumentArchiveRequest, createdBy string) error
+	Delete(ctx context.Context, ID int64) error
 }

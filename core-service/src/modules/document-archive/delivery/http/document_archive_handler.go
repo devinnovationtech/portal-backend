@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/go-playground/validator"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
@@ -23,6 +24,7 @@ func NewDocumentArchiveHandler(r *echo.Group, us domain.DocumentArchiveUsecase) 
 	}
 	r.GET("/document-archives", handler.Fetch)
 	r.POST("/document-archives", handler.Store)
+	r.DELETE("/document-archives/:id", handler.Delete)
 }
 
 // Fetch for fetching document archive data
@@ -75,6 +77,24 @@ func (h *documentArchiveHandler) Store(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusCreated, res)
+}
+
+func (h *documentArchiveHandler) Delete(c echo.Context) (err error) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, helpers.ResponseError{Message: domain.ErrNotFound.Error()})
+	}
+
+	ID := int64(id)
+	ctx := c.Request().Context()
+
+	if err = h.DocumentArchiveUcase.Delete(ctx, ID); err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, domain.MessageResponse{
+		Message: "Successfully deleted.",
+	})
 }
 
 func isRequestValid(ps interface{}) (bool, error) {
