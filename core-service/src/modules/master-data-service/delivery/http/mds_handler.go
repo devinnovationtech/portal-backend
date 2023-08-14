@@ -92,6 +92,7 @@ func (h *MasterDataServiceHandler) Fetch(c echo.Context) error {
 	ctx := c.Request().Context()
 	au := helpers.GetAuthenticatedUser(c)
 	params := helpers.GetRequestParams(c)
+	params.Keyword = helpers.RegexKeywordReplaceString(c, c.QueryParam("q"), "")
 	params.Filters = map[string]interface{}{
 		"status":       c.QueryParam("status"),
 		"opd_name":     c.QueryParam("opd_name"),
