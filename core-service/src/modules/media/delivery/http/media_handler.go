@@ -16,6 +16,24 @@ type MediaHandler struct {
 	MUsecase domain.MediaUsecase
 }
 
+var domainNames = []string{
+	"news",
+	"events",
+	"public-service",
+	"units",
+	"featured-program",
+	"informations",
+	"pop-up-banners",
+	"infographic-banners",
+	"logos",
+	"archives",
+}
+
+var domainTypes = []string{
+	"img",
+	"docs",
+}
+
 // NewMediaHandler will create a new MediaHandler
 func NewMediaHandler(e *echo.Group, r *echo.Group, mu domain.MediaUsecase) {
 	handler := &MediaHandler{
@@ -29,20 +47,16 @@ func NewMediaHandler(e *echo.Group, r *echo.Group, mu domain.MediaUsecase) {
 func (h *MediaHandler) Store(c echo.Context) (err error) {
 	// validate for certain allowed bucket name of domain
 	domain := c.QueryParam("domain")
-	domainBucketName := []string{
-		"news",
-		"events",
-		"public-service",
-		"units",
-		"featured-program",
-		"informations",
-		"pop-up-banners",
-		"infographic-banners",
+	domainType := c.QueryParam("type")
+
+	if domainTypeExists, _ := helpers.InArray(domainType, domainTypes); !domainTypeExists {
+		domainType = "img"
 	}
-	domainExists, domainIndex := helpers.InArray(domain, domainBucketName)
+
+	domainExists, domainIndex := helpers.InArray(domain, domainNames)
 	domain = ""
 	if domainExists {
-		domain = domainBucketName[domainIndex] + "/"
+		domain = domainNames[domainIndex] + "/"
 	}
 
 	// Source
@@ -63,6 +77,7 @@ func (h *MediaHandler) Store(c echo.Context) (err error) {
 	}
 
 	ctx := c.Request().Context()
+	domain = domainType + "/" + domain
 	res, err := h.MUsecase.Store(ctx, file, buf, domain)
 
 	if err != nil {
