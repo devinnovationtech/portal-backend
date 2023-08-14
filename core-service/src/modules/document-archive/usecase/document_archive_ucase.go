@@ -122,3 +122,10 @@ func (n *documentArchiveUsecase) Delete(c context.Context, ID int64) (err error)
 	err = n.documentArchiveRepo.Delete(ctx, ID)
 	return
 }
+func (n *documentArchiveUsecase) GetByID(c context.Context, ID int64) (res domain.DocumentArchive, err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	res, err = n.documentArchiveRepo.GetByID(ctx, ID)
+	return
+}

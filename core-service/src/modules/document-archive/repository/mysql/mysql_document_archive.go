@@ -127,3 +127,28 @@ func (r *mysqlDocumentArchiveRepository) Delete(ctx context.Context, ID int64) (
 	}
 	return
 }
+
+func (r *mysqlDocumentArchiveRepository) GetByID(ctx context.Context, ID int64) (res domain.DocumentArchive, err error) {
+	query := queryJoinDocArchive + ` AND d.id=?`
+
+	userID := uuid.UUID{}
+	err = r.Conn.QueryRowContext(ctx, query, ID).Scan(
+		&res.ID,
+		&res.Title,
+		&res.Excerpt,
+		&res.Description,
+		&res.Source,
+		&res.Mimetype,
+		&res.Category,
+		&userID,
+		&res.CreatedAt,
+		&res.UpdatedAt,
+	)
+
+	res.CreatedBy = domain.User{ID: userID}
+
+	if err != nil {
+		err = domain.ErrNotFound
+	}
+	return
+}

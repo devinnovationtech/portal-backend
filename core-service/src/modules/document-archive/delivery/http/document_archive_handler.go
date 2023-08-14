@@ -25,6 +25,7 @@ func NewDocumentArchiveHandler(r *echo.Group, us domain.DocumentArchiveUsecase) 
 	r.GET("/document-archives", handler.Fetch)
 	r.POST("/document-archives", handler.Store)
 	r.DELETE("/document-archives/:id", handler.Delete)
+	r.GET("/document-archives/:id", handler.GetByID)
 }
 
 // Fetch for fetching document archive data
@@ -95,6 +96,26 @@ func (h *documentArchiveHandler) Delete(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, domain.MessageResponse{
 		Message: "Successfully deleted.",
 	})
+}
+
+func (h *documentArchiveHandler) GetByID(c echo.Context) (err error) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, helpers.ResponseError{Message: domain.ErrNotFound.Error()})
+	}
+
+	ID := int64(id)
+	ctx := c.Request().Context()
+
+	listDoc, err := h.DocumentArchiveUcase.GetByID(ctx, ID)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	listDocRes := domain.ListDocumentArchive{}
+	copier.Copy(&listDocRes, &listDoc)
+
+	return c.JSON(http.StatusOK, domain.ResultData{Data: listDocRes})
 }
 
 func isRequestValid(ps interface{}) (bool, error) {
