@@ -63,9 +63,9 @@ func (r *mysqlDocumentArchiveRepository) fetchQuery(ctx context.Context, query s
 	return result, nil
 }
 
-func (r *mysqlDocumentArchiveRepository) count(ctx context.Context, query string) (total int64, err error) {
+func (r *mysqlDocumentArchiveRepository) count(ctx context.Context, query string, args ...interface{}) (total int64, err error) {
 
-	err = r.Conn.QueryRow(query).Scan(&total)
+	err = r.Conn.QueryRow(query, args...).Scan(&total)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -75,18 +75,19 @@ func (r *mysqlDocumentArchiveRepository) count(ctx context.Context, query string
 }
 
 func (r *mysqlDocumentArchiveRepository) Fetch(ctx context.Context, params *domain.Request) (res []domain.DocumentArchive, total int64, err error) {
-	query := filterDocArchiveQuery(params)
+	binds := make([]interface{}, 0)
+	query := filterDocArchiveQuery(params, &binds)
 
 	if params.SortBy != "" {
-		query += ` ORDER BY ` + params.SortBy + ` ` + params.SortOrder
+		query += ` ORDER BY d.` + params.SortBy + ` ` + params.SortOrder
 	} else {
 		query += ` ORDER BY d.created_at DESC `
 	}
 
-	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM document_archives d LEFT JOIN users u ON d.created_by = u.id WHERE 1=1 `+query)
+	total, _ = r.count(ctx, ` SELECT COUNT(1) FROM document_archives d LEFT JOIN users u ON d.created_by = u.id WHERE 1=1 `+query, binds...)
 	query = queryJoinDocArchive + query + ` LIMIT ?,? `
-
-	res, err = r.fetchQuery(ctx, query, params.Offset, params.PerPage)
+	binds = append(binds, params.Offset, params.PerPage)
+	res, err = r.fetchQuery(ctx, query, binds...)
 	if err != nil {
 		return nil, 0, err
 	}
