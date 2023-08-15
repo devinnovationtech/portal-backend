@@ -137,3 +137,11 @@ func (n *documentArchiveUsecase) TabStatus(c context.Context) (res []domain.TabS
 	res, err = n.documentArchiveRepo.TabStatus(ctx)
 	return
 }
+
+func (n *documentArchiveUsecase) Update(c context.Context, body *domain.DocumentArchiveRequest, updatedBy string, ID int64) (err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	err = n.documentArchiveRepo.Update(ctx, body, updatedBy, ID)
+	return
+}

@@ -21,7 +21,7 @@ func NewMysqlDocumentArchiveRepository(Conn *sql.DB) domain.DocumentArchiveRepos
 	return &mysqlDocumentArchiveRepository{Conn}
 }
 
-var queryJoinDocArchive = `SELECT d.id, d.title, d.excerpt, d.description, d.source, d.mimetype, d.category,
+var queryJoinDocArchive = `SELECT d.id, d.title, d.excerpt, d.description, d.source, d.mimetype, d.category, d.status,
 	d.created_by, d.created_at, d.updated_at FROM document_archives d 
 	LEFT JOIN users u
 	ON d.created_by = u.id
@@ -46,6 +46,7 @@ func (r *mysqlDocumentArchiveRepository) fetchQuery(ctx context.Context, query s
 			&docArc.Source,
 			&docArc.Mimetype,
 			&docArc.Category,
+			&docArc.Status,
 			&userID,
 			&docArc.CreatedAt,
 			&docArc.UpdatedAt,
@@ -141,6 +142,7 @@ func (r *mysqlDocumentArchiveRepository) GetByID(ctx context.Context, ID int64) 
 		&res.Source,
 		&res.Mimetype,
 		&res.Category,
+		&res.Status,
 		&userID,
 		&res.CreatedAt,
 		&res.UpdatedAt,
@@ -175,5 +177,32 @@ func (r *mysqlDocumentArchiveRepository) TabStatus(ctx context.Context) (res []d
 		}
 		res = append(res, t)
 	}
+	return
+}
+
+func (r *mysqlDocumentArchiveRepository) Update(ctx context.Context, body *domain.DocumentArchiveRequest, updatedBy string, ID int64) (err error) {
+	query := `UPDATE document_archives SET title=?, description=?, excerpt=?, source=?, mimetype=?, category=?, updated_by=?, updated_at=? WHERE id=?`
+
+	stmt, err := r.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+	res, err := stmt.ExecContext(ctx,
+		body.Title,
+		body.Description,
+		helpers.MakeExcerpt(body.Description, 150),
+		body.Source,
+		body.Mimetype,
+		body.Category,
+		updatedBy,
+		time.Now(),
+		ID,
+	)
+
+	rowsAffect, err := res.RowsAffected()
+	if rowsAffect == 0 {
+		err = domain.ErrNotFound
+	}
+
 	return
 }

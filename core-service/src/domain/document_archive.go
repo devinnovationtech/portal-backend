@@ -29,6 +29,7 @@ type ListDocumentArchive struct {
 	Description string    `json:"description"`
 	Source      string    `json:"source"`
 	Mimetype    string    `json:"mimetype"`
+	Status      string    `json:"status"`
 	Category    string    `json:"category"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
@@ -47,6 +48,7 @@ type DocumentArchiveRequest struct {
 type DocumentArchiveUsecase interface {
 	Fetch(ctx context.Context, params *Request) ([]DocumentArchive, int64, error)
 	Store(ctx context.Context, body *DocumentArchiveRequest, createdBy string) error
+	Update(ctx context.Context, body *DocumentArchiveRequest, UpdatedBy string, ID int64) error
 	Delete(ctx context.Context, ID int64) error
 	GetByID(ctx context.Context, ID int64) (DocumentArchive, error)
 	TabStatus(ctx context.Context) ([]TabStatusResponse, error)
@@ -56,6 +58,7 @@ type DocumentArchiveUsecase interface {
 type DocumentArchiveRepository interface {
 	Fetch(ctx context.Context, params *Request) ([]DocumentArchive, int64, error)
 	Store(ctx context.Context, body *DocumentArchiveRequest, createdBy string) error
+	Update(ctx context.Context, body *DocumentArchiveRequest, UpdatedBy string, ID int64) error
 	Delete(ctx context.Context, ID int64) error
 	GetByID(ctx context.Context, ID int64) (DocumentArchive, error)
 	TabStatus(ctx context.Context) ([]TabStatusResponse, error)

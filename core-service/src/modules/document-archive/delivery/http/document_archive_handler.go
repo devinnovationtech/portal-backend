@@ -24,6 +24,7 @@ func NewDocumentArchiveHandler(r *echo.Group, us domain.DocumentArchiveUsecase) 
 	}
 	r.GET("/document-archives", handler.Fetch)
 	r.POST("/document-archives", handler.Store)
+	r.PUT("/document-archives/:id", handler.Update)
 	r.DELETE("/document-archives/:id", handler.Delete)
 	r.GET("/document-archives/:id", handler.GetByID)
 	r.GET("/document-archives/tabs", handler.TabStatus)
@@ -131,6 +132,36 @@ func (h *documentArchiveHandler) TabStatus(c echo.Context) error {
 	return c.JSON(http.StatusOK, domain.ResultData{
 		Data: res,
 	})
+}
+
+func (h *documentArchiveHandler) Update(c echo.Context) (err error) {
+	req := new(domain.DocumentArchiveRequest)
+	if err = c.Bind(req); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	id, _ := strconv.Atoi(c.Param("id"))
+	ID := int64(id)
+
+	var ok bool
+	if ok, err = isRequestValid(req); !ok {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	auth := domain.JwtCustomClaims{}
+	mapstructure.Decode(c.Get("auth:user"), &auth)
+
+	ctx := c.Request().Context()
+	err = h.DocumentArchiveUcase.Update(ctx, req, auth.ID.String(), ID)
+	if err != nil {
+		return err
+	}
+
+	res := domain.MessageResponse{
+		Message: "successfully updated.",
+	}
+
+	return c.JSON(http.StatusOK, res)
 }
 
 func isRequestValid(ps interface{}) (bool, error) {
