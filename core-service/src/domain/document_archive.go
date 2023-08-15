@@ -49,6 +49,7 @@ type DocumentArchiveUsecase interface {
 	Store(ctx context.Context, body *DocumentArchiveRequest, createdBy string) error
 	Delete(ctx context.Context, ID int64) error
 	GetByID(ctx context.Context, ID int64) (DocumentArchive, error)
+	TabStatus(ctx context.Context) ([]TabStatusResponse, error)
 }
 
 // DocumentArchiveRepository ...
@@ -57,4 +58,5 @@ type DocumentArchiveRepository interface {
 	Store(ctx context.Context, body *DocumentArchiveRequest, createdBy string) error
 	Delete(ctx context.Context, ID int64) error
 	GetByID(ctx context.Context, ID int64) (DocumentArchive, error)
+	TabStatus(ctx context.Context) ([]TabStatusResponse, error)
 }

@@ -26,6 +26,7 @@ func NewDocumentArchiveHandler(r *echo.Group, us domain.DocumentArchiveUsecase) 
 	r.POST("/document-archives", handler.Store)
 	r.DELETE("/document-archives/:id", handler.Delete)
 	r.GET("/document-archives/:id", handler.GetByID)
+	r.GET("/document-archives/tabs", handler.TabStatus)
 }
 
 // Fetch for fetching document archive data
@@ -116,6 +117,20 @@ func (h *documentArchiveHandler) GetByID(c echo.Context) (err error) {
 	copier.Copy(&listDocRes, &listDoc)
 
 	return c.JSON(http.StatusOK, domain.ResultData{Data: listDocRes})
+}
+
+func (h *documentArchiveHandler) TabStatus(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	// getting data from usecase
+	res, err := h.DocumentArchiveUcase.TabStatus(ctx)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, domain.ResultData{
+		Data: res,
+	})
 }
 
 func isRequestValid(ps interface{}) (bool, error) {

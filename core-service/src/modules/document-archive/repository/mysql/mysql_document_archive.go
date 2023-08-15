@@ -153,3 +153,27 @@ func (r *mysqlDocumentArchiveRepository) GetByID(ctx context.Context, ID int64) 
 	}
 	return
 }
+
+func (r *mysqlDocumentArchiveRepository) TabStatus(ctx context.Context) (res []domain.TabStatusResponse, err error) {
+	query := `SELECT status, COUNT(1) FROM document_archives GROUP BY status ORDER BY status`
+
+	rows, err := r.Conn.QueryContext(ctx, query)
+	if err != nil {
+		return
+	}
+	res = make([]domain.TabStatusResponse, 0)
+	for rows.Next() {
+		t := domain.TabStatusResponse{}
+		err = rows.Scan(
+			&t.Status,
+			&t.Count,
+		)
+
+		if err != nil {
+			logrus.Error(err)
+			return
+		}
+		res = append(res, t)
+	}
+	return
+}

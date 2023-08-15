@@ -129,3 +129,11 @@ func (n *documentArchiveUsecase) GetByID(c context.Context, ID int64) (res domai
 	res, err = n.documentArchiveRepo.GetByID(ctx, ID)
 	return
 }
+
+func (n *documentArchiveUsecase) TabStatus(c context.Context) (res []domain.TabStatusResponse, err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	res, err = n.documentArchiveRepo.TabStatus(ctx)
+	return
+}
