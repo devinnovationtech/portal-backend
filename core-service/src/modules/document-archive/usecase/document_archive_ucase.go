@@ -145,3 +145,11 @@ func (n *documentArchiveUsecase) Update(c context.Context, body *domain.Document
 	err = n.documentArchiveRepo.Update(ctx, body, updatedBy, ID)
 	return
 }
+
+func (n *documentArchiveUsecase) UpdateStatus(c context.Context, body *domain.UpdateStatusDocumentArchiveRequest, updatedBy string, ID int64) (err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	err = n.documentArchiveRepo.UpdateStatus(ctx, body, updatedBy, ID)
+	return
+}

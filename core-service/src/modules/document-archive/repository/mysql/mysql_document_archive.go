@@ -206,3 +206,25 @@ func (r *mysqlDocumentArchiveRepository) Update(ctx context.Context, body *domai
 
 	return
 }
+
+func (r *mysqlDocumentArchiveRepository) UpdateStatus(ctx context.Context, body *domain.UpdateStatusDocumentArchiveRequest, updatedBy string, ID int64) (err error) {
+	query := `UPDATE document_archives SET status=?, updated_by=?, updated_at=? WHERE id=?`
+
+	stmt, err := r.Conn.PrepareContext(ctx, query)
+	if err != nil {
+		return
+	}
+	res, err := stmt.ExecContext(ctx,
+		body.Status,
+		updatedBy,
+		time.Now(),
+		ID,
+	)
+
+	rowsAffect, err := res.RowsAffected()
+	if rowsAffect == 0 {
+		err = domain.ErrNotFound
+	}
+
+	return
+}

@@ -28,6 +28,7 @@ func NewDocumentArchiveHandler(r *echo.Group, us domain.DocumentArchiveUsecase) 
 	r.DELETE("/document-archives/:id", handler.Delete)
 	r.GET("/document-archives/:id", handler.GetByID)
 	r.GET("/document-archives/tabs", handler.TabStatus)
+	r.PATCH("/document-archives/:id/status", handler.UpdateStatus)
 }
 
 // Fetch for fetching document archive data
@@ -153,6 +154,36 @@ func (h *documentArchiveHandler) Update(c echo.Context) (err error) {
 
 	ctx := c.Request().Context()
 	err = h.DocumentArchiveUcase.Update(ctx, req, auth.ID.String(), ID)
+	if err != nil {
+		return err
+	}
+
+	res := domain.MessageResponse{
+		Message: "successfully updated.",
+	}
+
+	return c.JSON(http.StatusOK, res)
+}
+
+func (h *documentArchiveHandler) UpdateStatus(c echo.Context) (err error) {
+	req := new(domain.UpdateStatusDocumentArchiveRequest)
+	if err = c.Bind(req); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
+	}
+
+	id, _ := strconv.Atoi(c.Param("id"))
+	ID := int64(id)
+
+	var ok bool
+	if ok, err = isRequestValid(req); !ok {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	auth := domain.JwtCustomClaims{}
+	mapstructure.Decode(c.Get("auth:user"), &auth)
+
+	ctx := c.Request().Context()
+	err = h.DocumentArchiveUcase.UpdateStatus(ctx, req, auth.ID.String(), ID)
 	if err != nil {
 		return err
 	}

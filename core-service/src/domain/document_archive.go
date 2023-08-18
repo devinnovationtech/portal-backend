@@ -44,6 +44,10 @@ type DocumentArchiveRequest struct {
 	Category    string `json:"category" validate:"required"`
 }
 
+type UpdateStatusDocumentArchiveRequest struct {
+	Status string `json:"status" validate:"required,eq=DRAFT|eq=PUBLISHED|eq=ARCHIVED"`
+}
+
 // DocumentArchiveUsecase ...
 type DocumentArchiveUsecase interface {
 	Fetch(ctx context.Context, params *Request) ([]DocumentArchive, int64, error)
@@ -52,6 +56,7 @@ type DocumentArchiveUsecase interface {
 	Delete(ctx context.Context, ID int64) error
 	GetByID(ctx context.Context, ID int64) (DocumentArchive, error)
 	TabStatus(ctx context.Context) ([]TabStatusResponse, error)
+	UpdateStatus(ctx context.Context, body *UpdateStatusDocumentArchiveRequest, updatedBy string, ID int64) error
 }
 
 // DocumentArchiveRepository ...
@@ -62,4 +67,5 @@ type DocumentArchiveRepository interface {
 	Delete(ctx context.Context, ID int64) error
 	GetByID(ctx context.Context, ID int64) (DocumentArchive, error)
 	TabStatus(ctx context.Context) ([]TabStatusResponse, error)
+	UpdateStatus(ctx context.Context, body *UpdateStatusDocumentArchiveRequest, updatedBy string, ID int64) error
 }
