@@ -58,6 +58,8 @@ func (r *mysqlDocumentArchiveRepository) fetchQuery(ctx context.Context, query s
 		}
 		docArc.CreatedBy = domain.User{ID: userID}
 
+		setIsCompleted(&docArc)
+
 		result = append(result, docArc)
 	}
 
@@ -150,6 +152,8 @@ func (r *mysqlDocumentArchiveRepository) GetByID(ctx context.Context, ID int64) 
 
 	res.CreatedBy = domain.User{ID: userID}
 
+	setIsCompleted(&res)
+
 	if err != nil {
 		err = domain.ErrNotFound
 	}
@@ -227,4 +231,12 @@ func (r *mysqlDocumentArchiveRepository) UpdateStatus(ctx context.Context, body 
 	}
 
 	return
+}
+
+func setIsCompleted(res *domain.DocumentArchive) {
+	res.IsCompleted = helpers.IsCompletedDocumentArchive(&domain.DocumentArchiveRequest{
+		Title:       res.Title,
+		Description: res.Description,
+		Category:    res.Category,
+	})
 }

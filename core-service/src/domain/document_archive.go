@@ -5,6 +5,12 @@ import (
 	"time"
 )
 
+var (
+	DocumentArchiveDraft     string = "DRAFT"
+	DocumentArchivePublished string = "PUBLISHED"
+	DocumentArchiveArchived  string = "ARCHIVED"
+)
+
 // DocumentArchive Struct ...
 type DocumentArchive struct {
 	ID          int64     `json:"id"`
@@ -15,6 +21,7 @@ type DocumentArchive struct {
 	Mimetype    string    `json:"mimetype"`
 	Status      string    `json:"status"`
 	Category    string    `json:"category" validate:"required"`
+	IsCompleted bool      `json:"is_completed"`
 	CreatedBy   User      `json:"created_by"`
 	UpdatedBy   User      `json:"updated_by"`
 	CreatedAt   time.Time `json:"created_at"`
@@ -31,17 +38,18 @@ type ListDocumentArchive struct {
 	Mimetype    string    `json:"mimetype"`
 	Status      string    `json:"status"`
 	Category    string    `json:"category"`
+	IsCompleted bool      `json:"is_completed"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type DocumentArchiveRequest struct {
-	Title       string `json:"title" validate:"required"`
-	Description string `json:"description" validate:"required"`
-	Source      string `json:"source" validate:"required"`
-	Mimetype    string `json:"mimetype" validate:"required"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Source      string `json:"source"`
+	Mimetype    string `json:"mimetype"`
 	Status      string `json:"status" validate:"required,eq=DRAFT|eq=PUBLISHED|eq=ARCHIVED"`
-	Category    string `json:"category" validate:"required"`
+	Category    string `json:"category"`
 }
 
 type UpdateStatusDocumentArchiveRequest struct {

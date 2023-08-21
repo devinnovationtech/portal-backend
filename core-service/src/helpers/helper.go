@@ -72,3 +72,7 @@ func RegexReplaceSlug(str string) string {
 
 	return strings.Trim(str, "-") // Remove leading and trailing
 }
+
+func IsCompletedDocumentArchive(body *domain.DocumentArchiveRequest) bool {
+	return (body.Title != "" && body.Description != "" && body.Category != "")
+}

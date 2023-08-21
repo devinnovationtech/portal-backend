@@ -73,7 +73,7 @@ func (h *documentArchiveHandler) Store(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	err = h.DocumentArchiveUcase.Store(ctx, req, auth.ID.String())
 	if err != nil {
-		return err
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
 	}
 
 	res := domain.MessageResponse{

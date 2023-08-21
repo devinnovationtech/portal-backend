@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
 )
@@ -111,6 +112,11 @@ func (n *documentArchiveUsecase) Store(c context.Context, body *domain.DocumentA
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
+	if body.Status == domain.DocumentArchivePublished && !helpers.IsCompletedDocumentArchive(body) {
+		err = domain.ErrBadRequest
+		return
+	}
+
 	err = n.documentArchiveRepo.Store(ctx, body, createdBy)
 	return
 }
@@ -149,6 +155,16 @@ func (n *documentArchiveUsecase) Update(c context.Context, body *domain.Document
 func (n *documentArchiveUsecase) UpdateStatus(c context.Context, body *domain.UpdateStatusDocumentArchiveRequest, updatedBy string, ID int64) (err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
+
+	item, err := n.GetByID(ctx, ID)
+	if err != nil {
+		return
+	}
+
+	if body.Status == domain.DocumentArchivePublished && item.IsCompleted {
+		err = domain.ErrBadRequest
+		return
+	}
 
 	err = n.documentArchiveRepo.UpdateStatus(ctx, body, updatedBy, ID)
 	return
