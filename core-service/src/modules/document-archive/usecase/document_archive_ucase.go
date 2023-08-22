@@ -161,7 +161,7 @@ func (n *documentArchiveUsecase) UpdateStatus(c context.Context, body *domain.Up
 		return
 	}
 
-	if body.Status == domain.DocumentArchivePublished && item.IsCompleted {
+	if body.Status == domain.DocumentArchivePublished && !item.IsCompleted {
 		err = domain.ErrBadRequest
 		return
 	}
