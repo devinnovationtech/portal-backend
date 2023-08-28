@@ -5,18 +5,21 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 	"github.com/labstack/echo/v4"
 )
 
 // SearchHandler ...
 type SearchHandler struct {
 	SUsecase domain.SearchUsecase
+	Logger   *utils.Logrus
 }
 
 // NewSearchHandler will initialize the search/ resources endpoint
-func NewSearchHandler(e *echo.Group, r *echo.Group, us domain.SearchUsecase) {
+func NewSearchHandler(e *echo.Group, r *echo.Group, us domain.SearchUsecase, logger *utils.Logrus) {
 	handler := &SearchHandler{
 		SUsecase: us,
+		Logger:   logger,
 	}
 	e.GET("/search", handler.FetchSearch)
 	e.GET("/search/suggest", handler.SearchSuggestion)
@@ -30,6 +33,8 @@ func (h *SearchHandler) FetchSearch(c echo.Context) error {
 		"domain":    c.Request().URL.Query()["domain[]"],
 		"fuzziness": c.QueryParam("fuzziness"),
 	}
+	log := helpers.GetLog(c)
+	log.AdditionalInfo["searched_keywords"] = params.Keyword
 
 	listSearch, tot, aggs, err := h.SUsecase.Fetch(ctx, &params)
 	if err != nil {
@@ -39,6 +44,7 @@ func (h *SearchHandler) FetchSearch(c echo.Context) error {
 	res := helpers.Paginate(c, listSearch, tot, params)
 	meta := res.Meta.(*domain.MetaData)
 	meta.Aggregations = helpers.ESAggregate(aggs)
+	h.Logger.Info(log, "Searched keyword logs")
 	return c.JSON(http.StatusOK, res)
 }
 

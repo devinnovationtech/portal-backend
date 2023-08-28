@@ -95,7 +95,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger utils.Lo
 	_feedbackHttpDelivery.NewFeedbackHandler(v1, r, u.FeedbackUcase)
 	_featuredProgramHttpDelivery.NewFeaturedProgramHandler(v1, r, u.FeaturedProgramUcase)
 	_authHttpDelivery.NewAuthHandler(v1, r, u.AuthUcase)
-	_searchHttpDelivery.NewSearchHandler(v1, r, u.SearchUcase)
+	_searchHttpDelivery.NewSearchHandler(v1, r, u.SearchUcase, &logger)
 	_servicePublicHttpDelivery.NewServicePublicHandler(v1, p, r, u.ServicePublicUcase, apm)
 	_userHttpDelivery.NewUserHandler(v1, r, u.UserUsecase)
 	_galleryHttpDelivery.NewMediaHandler(v1, r, u.MediaUsecase)
