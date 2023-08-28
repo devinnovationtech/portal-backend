@@ -83,10 +83,10 @@ type Repository struct {
 }
 
 // NewRepository will create an object that represent all repos interface
-func NewRepository(conn *utils.Conn, cfg *config.Config, logrus *utils.Logrus) *Repository {
+func NewRepository(conn *utils.Conn, cfg *config.Config) *Repository {
 	return &Repository{
 		CategoryRepo:              _categoryRepo.NewMysqlCategoryRepository(conn.Mysql),
-		NewsRepo:                  _newsRepo.NewMysqlNewsRepository(conn.Mysql, logrus),
+		NewsRepo:                  _newsRepo.NewMysqlNewsRepository(conn.Mysql),
 		InformationRepo:           _informationRepo.NewMysqlInformationRepository(conn.Mysql),
 		UnitRepo:                  _unitRepo.NewMysqlUnitRepository(conn.Mysql),
 		AreaRepo:                  _areaRepo.NewMysqlAreaRepository(conn.Mysql),

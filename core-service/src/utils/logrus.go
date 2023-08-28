@@ -1,36 +1,27 @@
 package utils
 
 import (
-	"os"
-
+	_goLog "github.com/jabardigitalservice/golog/logger"
 	_ "github.com/newrelic/go-agent/v3/integrations/nrmysql"
-	"github.com/sirupsen/logrus"
 )
 
 type Logrus struct {
-	logger *logrus.Logger
+	logger *_goLog.Logger
 }
 
 func NewLogrus() *Logrus {
 	// set formatter logs
-	log := logrus.New()
-	formatter := &logrus.JSONFormatter{
-		FieldMap: logrus.FieldMap{
-			"msg": "message",
-		},
-	}
-	log.Formatter = formatter
-	log.SetOutput(os.Stdout)
+	log := _goLog.Init()
 
 	return &Logrus{
 		logger: log,
 	}
 }
 
-func (l *Logrus) Error(logsField logrus.Fields, message interface{}) {
-	l.logger.WithFields(logsField).Error(message)
+func (l *Logrus) Info(logsField *_goLog.LoggerData, message string) {
+	l.logger.Info(logsField, message)
 }
 
-func (l *Logrus) Info(logsField logrus.Fields, message interface{}) {
-	l.logger.WithFields(logsField).Info(message)
+func (l *Logrus) Error(logsField *_goLog.LoggerData, e error) {
+	l.logger.Error(logsField, e)
 }

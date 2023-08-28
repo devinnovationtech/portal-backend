@@ -25,7 +25,7 @@ func main() {
 	}()
 
 	// init repo category repo
-	mysqlRepos := server.NewRepository(conn, cfg, logrus)
+	mysqlRepos := server.NewRepository(conn, cfg)
 	usecases := server.NewUcase(cfg, conn, mysqlRepos, cfg.App.ContextTimeout)
 	server.NewHandler(cfg, apm, usecases, *logrus)
 }

@@ -213,12 +213,13 @@ func GetMetaDataImage(link string) (meta domain.DetailMetaDataImage, err error) 
 	return meta, err
 }
 
-func GetLog(c echo.Context) _goLog.LoggerData {
+func GetLog(c echo.Context) *_goLog.LoggerData {
 	protocol := "http"
 	if c.Request().TLS != nil {
 		protocol = "https"
 	}
-	return _goLog.LoggerData{
+  
+	return &_goLog.LoggerData{
 		AdditionalInfo: map[string]interface{}{
 			"http_host":         c.Request().Host,
 			"http_addr":         protocol + "://" + c.Request().Host + c.Request().RequestURI,

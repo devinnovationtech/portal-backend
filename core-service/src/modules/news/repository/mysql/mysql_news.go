@@ -11,21 +11,18 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
 )
 
 type mysqlNewsRepository struct {
-	Conn   *sql.DB
-	Logger *utils.Logrus
+	Conn *sql.DB
 }
 
 // NewMysqlNewsRepository will create an object that represent the news.Repository interface
-func NewMysqlNewsRepository(Conn *sql.DB, Logger *utils.Logrus) domain.NewsRepository {
+func NewMysqlNewsRepository(Conn *sql.DB) domain.NewsRepository {
 	return &mysqlNewsRepository{
 		Conn,
-		Logger,
 	}
 }
 
@@ -49,10 +46,6 @@ func (m *mysqlNewsRepository) GetTx(ctx context.Context) (tx *sql.Tx, err error)
 func (m *mysqlNewsRepository) fetch(ctx context.Context, query string, args ...interface{}) (result []domain.News, err error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
-		m.Logger.Error(logrus.Fields(logrus.Fields{
-			"timestamps": time.Now().Format("2006-01-02 15:04:05"),
-			"method":     "fetch",
-		}), err.Error())
 		return nil, err
 	}
 

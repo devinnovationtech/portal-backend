@@ -7,7 +7,6 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	mysqlRepo "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/news/repository/mysql"
-	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 	"github.com/stretchr/testify/assert"
 	sqlmock "gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
@@ -57,7 +56,7 @@ func TestFetch(t *testing.T) {
 	query := "SELECT n.id, n.category, n.title, n.excerpt, n.content, n.image, n.video, n.slug, n.author, n.reporter, n.editor, n.area_id, n.type, n.views, n.shared, n.source, n.duration, n.start_date, n.end_date, n.status, n.is_live, n.link, n.published_at, n.created_by, n.created_at, n.updated_at FROM news n LEFT JOIN users u ON n.created_by = u.id WHERE n.deleted_at is NULL"
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
-	a := mysqlRepo.NewMysqlNewsRepository(db, &utils.Logrus{})
+	a := mysqlRepo.NewMysqlNewsRepository(db)
 
 	params := &domain.Request{
 		Keyword:   "",
