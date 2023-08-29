@@ -37,8 +37,9 @@ func (h *documentArchiveHandler) Fetch(c echo.Context) error {
 	ctx := c.Request().Context()
 	params := helpers.GetRequestParams(c)
 	params.Filters = map[string]interface{}{
-		"category": helpers.RegexReplaceString(c, c.QueryParam("cat"), ""),
-		"status":   c.QueryParam("status"),
+		"category":   helpers.RegexReplaceString(c, c.QueryParam("cat"), ""),
+		"categories": c.Request().URL.Query()["cat[]"],
+		"status":     c.QueryParam("status"),
 	}
 
 	// getting data from usecase

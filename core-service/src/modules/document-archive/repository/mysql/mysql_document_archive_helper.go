@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 )
 
 /**
@@ -21,6 +22,12 @@ func filterDocArchiveQuery(params *domain.Request, binds *[]interface{}) string 
 	if v, ok := params.Filters["category"]; ok && v != "" {
 		*binds = append(*binds, v)
 		query = fmt.Sprintf(`%s AND d.category = ?`, query)
+	} else if v, ok := params.Filters["categories"]; ok && v != "" {
+		categories := params.Filters["categories"].([]string)
+		if len(categories) > 0 {
+			inBind := helpers.GetInBind(binds, categories)
+			query = fmt.Sprintf(`%s AND d.category IN %s`, query, inBind)
+		}
 	}
 
 	if v, ok := params.Filters["status"]; ok && v != "" {
