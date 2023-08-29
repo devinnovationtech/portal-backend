@@ -148,6 +148,11 @@ func (n *documentArchiveUsecase) Update(c context.Context, body *domain.Document
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()
 
+	if body.Status == domain.DocumentArchivePublished && !helpers.IsCompletedDocumentArchive(body) {
+		err = domain.ErrBadRequest
+		return
+	}
+
 	err = n.documentArchiveRepo.Update(ctx, body, updatedBy, ID)
 	return
 }

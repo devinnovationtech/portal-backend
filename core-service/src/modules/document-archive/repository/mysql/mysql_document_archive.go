@@ -185,7 +185,7 @@ func (r *mysqlDocumentArchiveRepository) TabStatus(ctx context.Context) (res []d
 }
 
 func (r *mysqlDocumentArchiveRepository) Update(ctx context.Context, body *domain.DocumentArchiveRequest, updatedBy string, ID int64) (err error) {
-	query := `UPDATE document_archives SET title=?, description=?, excerpt=?, source=?, mimetype=?, category=?, updated_by=?, updated_at=? WHERE id=?`
+	query := `UPDATE document_archives SET title=?, description=?, excerpt=?, source=?, mimetype=?, category=?, status=?, updated_by=?, updated_at=? WHERE id=?`
 
 	stmt, err := r.Conn.PrepareContext(ctx, query)
 	if err != nil {
@@ -198,6 +198,7 @@ func (r *mysqlDocumentArchiveRepository) Update(ctx context.Context, body *domai
 		body.Source,
 		body.Mimetype,
 		body.Category,
+		body.Status,
 		updatedBy,
 		time.Now(),
 		ID,
