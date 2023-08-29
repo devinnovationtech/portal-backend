@@ -33,18 +33,20 @@ func (h *SearchHandler) FetchSearch(c echo.Context) error {
 		"domain":    c.Request().URL.Query()["domain[]"],
 		"fuzziness": c.QueryParam("fuzziness"),
 	}
-	log := helpers.GetLog(c)
+	log := helpers.MapLog(c)
+	log.Module = domain.SearchModule
 	log.AdditionalInfo["searched_keywords"] = params.Keyword
 
 	listSearch, tot, aggs, err := h.SUsecase.Fetch(ctx, &params)
 	if err != nil {
+		h.Logger.Error(log, err)
 		return err
 	}
 
 	res := helpers.Paginate(c, listSearch, tot, params)
 	meta := res.Meta.(*domain.MetaData)
 	meta.Aggregations = helpers.ESAggregate(aggs)
-	h.Logger.Info(log, "Searched keyword logs")
+	h.Logger.Info(log, "OK")
 	return c.JSON(http.StatusOK, res)
 }
 

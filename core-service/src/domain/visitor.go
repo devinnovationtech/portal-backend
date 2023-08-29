@@ -4,6 +4,10 @@ import (
 	"context"
 )
 
+var (
+	ExternalModule = "EXTERNAL"
+)
+
 type CounterVisitorResponse struct {
 	Data CounterVisitor `json:"data"`
 }

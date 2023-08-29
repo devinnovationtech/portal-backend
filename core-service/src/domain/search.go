@@ -5,6 +5,10 @@ import (
 	"time"
 )
 
+var (
+	SearchModule = "SEARCH"
+)
+
 // Search ...
 type Search struct {
 	ID          int        `json:"id"`

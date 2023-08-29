@@ -4,23 +4,38 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 	"github.com/labstack/echo/v4"
 )
 
+type ExternalHandler struct {
+	Logger *utils.Logrus
+}
+
 // NewExternalHandler will initialize the event endpoint
-func NewExternalHandler(p *echo.Group) {
-	p.GET("/link-checker", CheckLinkHandler)
+func NewExternalHandler(p *echo.Group, logger *utils.Logrus) {
+	handler := &ExternalHandler{
+		Logger: logger,
+	}
+	p.GET("/link-checker", handler.CheckLinkHandler)
 }
 
 // Fetch will get events data
-func CheckLinkHandler(c echo.Context) error {
+func (h *ExternalHandler) CheckLinkHandler(c echo.Context) error {
 	link := c.QueryParam("link")
 	if !strings.HasPrefix(link, "http://") && !strings.HasPrefix(link, "https://") {
 		link = "http://" + link
 	}
 
+	log := helpers.MapLog(c)
+	log.Module = domain.ExternalModule
+	log.AdditionalInfo["visited_external_links"] = link
+
 	resp, err := http.Get(link)
 	if err != nil {
+		h.Logger.Error(log, err)
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"link":  link,
 			"valid": false,
@@ -41,6 +56,7 @@ func CheckLinkHandler(c echo.Context) error {
 		}
 	}
 
+	h.Logger.Info(log, "OK")
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"link":  link,
 		"valid": valid,

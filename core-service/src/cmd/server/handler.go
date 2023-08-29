@@ -25,7 +25,7 @@ import (
 	_districtHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/district/delivery/http"
 	_publicDocumentArchiveHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/document-archive/delivery/http"
 	_eventHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/event/delivery/http"
-	_checkerHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/external/delivery/http"
+	_externalHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/external/delivery/http"
 	_featuredProgramHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/featured-program/delivery/http"
 	_feedbackHttpDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/feedback/delivery/http"
 	_governmentAffairDelivery "github.com/jabardigitalservice/portal-jabar-services/core-service/src/modules/government-affair/delivery/http"
@@ -120,7 +120,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger utils.Lo
 	_uptdCabdinDelivery.NewUptdCabdinHandler(r, u.UptdCabdinUsecase, apm)
 	_masterDataServiceDelivery.NewMasterDataServiceHandler(r, u.MasterDataServiceUsecase, apm)
 	_masterDataPublicationDelivery.NewMasterDataPublicationHandler(p, r, u.MasterDataPublicationUsecase, apm)
-	_checkerHttpDelivery.NewExternalHandler(p)
+	_externalHttpDelivery.NewExternalHandler(p, &logger)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))
 }
