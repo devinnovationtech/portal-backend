@@ -16,6 +16,7 @@ func main() {
 	apm := utils.NewApm(cfg)
 	conn := utils.NewDBConn(cfg)
 	logrus := utils.NewLogrus()
+	utils.InitUnleash(cfg)
 
 	defer func() {
 		err := conn.Mysql.Close()

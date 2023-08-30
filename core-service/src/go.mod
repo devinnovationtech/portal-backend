@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
+	github.com/Unleash/unleash-client-go/v3 v3.8.0 // indirect
 	github.com/aws/aws-sdk-go v1.15.11
 	github.com/containerd/containerd v1.5.5 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible

@@ -22,6 +22,7 @@ type Config struct {
 	NewRelic newrelic.Config
 	Mail     MailConfig
 	External ExternalConfig
+	Unleash  UnleashConfig
 }
 
 // NewConfig creates a new Config struct
@@ -46,5 +47,6 @@ func NewConfig() *Config {
 		NewRelic: LoadNewRelicConfig(),
 		Mail:     LoadMailConfig(),
 		External: LoadExternalConfig(),
+		Unleash:  LoadUnleashConfig(),
 	}
 }
