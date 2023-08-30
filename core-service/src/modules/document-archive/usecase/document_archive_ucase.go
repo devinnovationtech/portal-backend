@@ -108,6 +108,13 @@ func (n *documentArchiveUsecase) Fetch(c context.Context, params *domain.Request
 	return n.get(c, params)
 }
 
+func (n *documentArchiveUsecase) FetchWithoutGoRoutine(c context.Context, params *domain.Request) (res []domain.DocumentArchive, total int64, err error) {
+	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
+	defer cancel()
+
+	return n.documentArchiveRepo.Fetch(ctx, params)
+}
+
 func (n *documentArchiveUsecase) Store(c context.Context, body *domain.DocumentArchiveRequest, createdBy string) (err error) {
 	ctx, cancel := context.WithTimeout(c, n.contextTimeout)
 	defer cancel()

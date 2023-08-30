@@ -9,8 +9,8 @@ import (
 
 func InitUnleash(cfg *config.Config) {
 	unleash.Initialize(
+		unleash.WithListener(&unleash.DebugListener{}),
 		unleash.WithAppName(cfg.App.Name),
-		unleash.WithEnvironment(cfg.App.Env),
 		unleash.WithUrl(cfg.Unleash.Url),
 		unleash.WithCustomHeaders(http.Header{"Authorization": {cfg.Unleash.Token}}),
 	)

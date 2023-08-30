@@ -104,7 +104,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger utils.Lo
 	_regInvitationHttpDelivery.NewRegistrationInvitationHandler(v1, r, u.RegInvitationUsecase)
 	_awardHttpDelivery.NewAwardHandler(v1, u.AwardUsecase)
 	_districtHttpDelivery.NewDistrictHandler(v1, u.DistrictUsecase)
-	_publicDocumentArchiveHttpDelivery.NewPublicDocumentArchiveHandler(p, u.DocumentArchiveUsecase)
+	_publicDocumentArchiveHttpDelivery.NewPublicDocumentArchiveHandler(p, u.DocumentArchiveUsecase, &logger)
 	_publicDocumentArchiveHttpDelivery.NewDocumentArchiveHandler(r, u.DocumentArchiveUsecase)
 	_publicServiceHttpDelivery.NewPublicServiceHandler(v1, p, u.PublicServiceUsecase)
 	_visitorHttpDelivery.NewCounterVisitorHandler(p, u.VisitorUsecase)

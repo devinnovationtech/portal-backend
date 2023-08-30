@@ -11,6 +11,10 @@ var (
 	DocumentArchiveArchived  string = "ARCHIVED"
 )
 
+var (
+	DocumentArchiveModule = "DOCUMENT-ARCHIVE"
+)
+
 // DocumentArchive Struct ...
 type DocumentArchive struct {
 	ID          int64     `json:"id"`
@@ -59,6 +63,7 @@ type UpdateStatusDocumentArchiveRequest struct {
 // DocumentArchiveUsecase ...
 type DocumentArchiveUsecase interface {
 	Fetch(ctx context.Context, params *Request) ([]DocumentArchive, int64, error)
+	FetchWithoutGoRoutine(ctx context.Context, params *Request) ([]DocumentArchive, int64, error)
 	Store(ctx context.Context, body *DocumentArchiveRequest, createdBy string) error
 	Update(ctx context.Context, body *DocumentArchiveRequest, UpdatedBy string, ID int64) error
 	Delete(ctx context.Context, ID int64) error
