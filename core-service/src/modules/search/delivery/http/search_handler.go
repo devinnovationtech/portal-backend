@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
@@ -35,7 +36,7 @@ func (h *SearchHandler) FetchSearch(c echo.Context) error {
 	}
 	log := helpers.MapLog(c)
 	log.Module = domain.SearchModule
-	log.AdditionalInfo["searched_keywords"] = params.Keyword
+	log.AdditionalInfo["searched_keywords"] = strings.ToLower(params.Keyword)
 
 	listSearch, tot, aggs, err := h.SUsecase.Fetch(ctx, &params)
 	if err != nil {
