@@ -65,6 +65,12 @@ func RegexKeywordReplaceString(c echo.Context, str string, repl string) string {
 	return re.ReplaceAllString(str, repl)
 }
 
+func RegexCustomReplaceString(c echo.Context, str string, repl string) string {
+	regexPattern := `[^ a-zA-Z0-9_,\.\'"\-]`
+	re := regexp.MustCompile(regexPattern)
+	return re.ReplaceAllString(str, repl)
+}
+
 // Sanity slug text with standard regex rules
 func RegexReplaceSlug(str string) string {
 	reg := regexp.MustCompile("[^a-z0-9]+")

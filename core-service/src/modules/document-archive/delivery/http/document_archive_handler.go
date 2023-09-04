@@ -36,6 +36,7 @@ func (h *documentArchiveHandler) Fetch(c echo.Context) error {
 	// init request by context
 	ctx := c.Request().Context()
 	params := helpers.GetRequestParams(c)
+	params.Keyword = helpers.RegexCustomReplaceString(c, c.QueryParam("q"), "")
 	params.Filters = map[string]interface{}{
 		"category":   helpers.RegexReplaceString(c, c.QueryParam("cat"), ""),
 		"categories": c.Request().URL.Query()["cat[]"],
