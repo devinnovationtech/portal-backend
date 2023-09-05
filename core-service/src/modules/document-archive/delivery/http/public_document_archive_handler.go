@@ -41,7 +41,7 @@ func (h *PublicDocumentArchiveHandler) Fetch(c echo.Context) error {
 	log.Module = domain.DocumentArchiveModule
 
 	// getting data from usecase
-	variant := unleash.GetVariant("CMS-ARSIP-DAN-DOKUMEN")
+	variant := unleash.GetVariant(domain.PortalDocumentArchive)
 	var (
 		listDoc []domain.DocumentArchive
 		total   int64

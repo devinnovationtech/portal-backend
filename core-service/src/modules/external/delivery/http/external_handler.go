@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/Unleash/unleash-client-go/v3"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
@@ -24,6 +25,12 @@ func NewExternalHandler(p *echo.Group, logger *utils.Logrus) {
 
 // Fetch will get events data
 func (h *ExternalHandler) CheckLinkHandler(c echo.Context) error {
+	if !unleash.IsEnabled(domain.PortalExternalLink) {
+		return c.JSON(http.StatusNotFound, domain.MessageResponse{
+			Message: "API is Not Found!",
+		})
+	}
+
 	link := c.QueryParam("link")
 	if !strings.HasPrefix(link, "http://") && !strings.HasPrefix(link, "https://") {
 		link = "http://" + link
