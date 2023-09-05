@@ -47,7 +47,16 @@ func (h *SearchHandler) FetchSearch(c echo.Context) error {
 	res := helpers.Paginate(c, listSearch, tot, params)
 	meta := res.Meta.(*domain.MetaData)
 	meta.Aggregations = helpers.ESAggregate(aggs)
-	h.Logger.Info(log, "OK")
+
+	disAllowedUserAgent := []string{
+		"axios",
+		"postman",
+	}
+
+	if !helpers.IsDisallowed(log.AdditionalInfo["user_agent"].(string), disAllowedUserAgent) { // TEMP: condition for mitigation non-organic search
+		h.Logger.Info(log, "OK")
+	}
+
 	return c.JSON(http.StatusOK, res)
 }
 

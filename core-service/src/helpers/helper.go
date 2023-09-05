@@ -82,3 +82,12 @@ func RegexReplaceSlug(str string) string {
 func IsCompletedDocumentArchive(body *domain.DocumentArchiveRequest) bool {
 	return (body.Title != "" && body.Description != "" && body.Category != "")
 }
+
+func IsDisallowed(input string, disallowedKeywords []string) bool {
+	for _, keyword := range disallowedKeywords {
+		if strings.Contains(strings.ToLower(input), strings.ToLower(keyword)) {
+			return true
+		}
+	}
+	return false
+}
