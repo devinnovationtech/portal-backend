@@ -66,7 +66,7 @@ func RegexKeywordReplaceString(c echo.Context, str string, repl string) string {
 }
 
 func RegexCustomReplaceString(c echo.Context, str string, repl string) string {
-	regexPattern := `[^ a-zA-Z0-9_,\.\'"\-]`
+	regexPattern := `[^ a-zA-Z0-9_,\.\'"\/\/-]`
 	re := regexp.MustCompile(regexPattern)
 	return re.ReplaceAllString(str, repl)
 }
