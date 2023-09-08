@@ -46,17 +46,19 @@ func NewMediaHandler(e *echo.Group, r *echo.Group, mu domain.MediaUsecase) {
 // Store will store the feedback by given request body
 func (h *MediaHandler) Store(c echo.Context) (err error) {
 	// validate for certain allowed bucket name of domain
-	domain := c.QueryParam("domain")
-	domainType := c.QueryParam("type")
-
-	if domainTypeExists, _ := helpers.InArray(domainType, domainTypes); !domainTypeExists {
-		domainType = "img"
+	params := domain.MediaParamsRequest{
+		Domain:        c.QueryParam("domain"),
+		DomainType:    c.QueryParam("type"),
+		IsSetAliasUrl: c.QueryParam("is_set_alias_url"),
+	}
+	if domainTypeExists, _ := helpers.InArray(params.DomainType, domainTypes); !domainTypeExists {
+		params.DomainType = "img"
 	}
 
-	domainExists, domainIndex := helpers.InArray(domain, domainNames)
-	domain = ""
+	domainExists, domainIndex := helpers.InArray(params.Domain, domainNames)
+	params.Domain = ""
 	if domainExists {
-		domain = domainNames[domainIndex] + "/"
+		params.Domain = domainNames[domainIndex] + "/"
 	}
 
 	// Source
@@ -77,8 +79,8 @@ func (h *MediaHandler) Store(c echo.Context) (err error) {
 	}
 
 	ctx := c.Request().Context()
-	domain = domainType + "/" + domain
-	res, err := h.MUsecase.Store(ctx, file, buf, domain)
+	params.Domain = params.DomainType + "/" + params.Domain
+	res, err := h.MUsecase.Store(ctx, file, buf, params)
 
 	if err != nil {
 		logrus.Fatal(err)

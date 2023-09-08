@@ -40,11 +40,15 @@ func (u *mediaUsecase) newMediaResponse(fileName string, fileDownloadUri string,
 	}
 }
 
-func (u *mediaUsecase) Store(c context.Context, file *multipart.FileHeader, buf bytes.Buffer, domain string) (res *domain.MediaResponse, err error) {
+func (u *mediaUsecase) Store(c context.Context, file *multipart.FileHeader, buf bytes.Buffer, params domain.MediaParamsRequest) (res *domain.MediaResponse, err error) {
+	url := u.config.AWS.Cloudfront
+	if params.IsSetAliasUrl == "true" {
+		url = u.config.App.FileUrl
+	}
 	fileName := strings.Replace(fmt.Sprintf("%d-%s", time.Now().Unix(), file.Filename), " ", "-", -1) // fixme
 	fileSize := file.Size
-	filePath := u.config.AWS.Env + "/media/" + domain + fileName
-	fileDownloadUri := u.config.AWS.Cloudfront + "/" + filePath
+	filePath := u.config.AWS.Env + "/media/" + params.Domain + fileName
+	fileDownloadUri := url + "/" + filePath
 
 	_, err = s3.New(u.conn.AWS).PutObject(&s3.PutObjectInput{
 		Bucket:               aws.String(u.config.AWS.Bucket),

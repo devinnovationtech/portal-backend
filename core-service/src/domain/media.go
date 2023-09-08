@@ -17,8 +17,14 @@ type DeleteMediaRequest struct {
 	Key    string `json:"key"`
 }
 
+type MediaParamsRequest struct {
+	Domain        string
+	DomainType    string
+	IsSetAliasUrl string
+}
+
 // MediaUsecase is an interface for media use cases
 type MediaUsecase interface {
-	Store(context.Context, *multipart.FileHeader, bytes.Buffer, string) (*MediaResponse, error)
+	Store(context.Context, *multipart.FileHeader, bytes.Buffer, MediaParamsRequest) (*MediaResponse, error)
 	Delete(ctx context.Context, body *DeleteMediaRequest) (err error)
 }
