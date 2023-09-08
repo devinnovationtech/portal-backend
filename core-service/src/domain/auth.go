@@ -7,6 +7,10 @@ import (
 	"github.com/google/uuid"
 )
 
+var (
+	AuthModule = "AUTH"
+)
+
 type JwtCustomClaims struct {
 	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`

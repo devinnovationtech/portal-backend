@@ -8,17 +8,20 @@ import (
 
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 )
 
 // AuthHandler ...
 type AuthHandler struct {
 	AUsecase domain.AuthUsecase
+	Logger   *utils.Logrus
 }
 
 // NewAuthHandler will initialize the contents/ resources endpoint
-func NewAuthHandler(e *echo.Group, r *echo.Group, us domain.AuthUsecase) {
+func NewAuthHandler(e *echo.Group, r *echo.Group, us domain.AuthUsecase, logger *utils.Logrus) {
 	handler := &AuthHandler{
 		AUsecase: us,
+		Logger:   logger,
 	}
 
 	e.POST("/auth/login", handler.Login)
@@ -47,11 +50,17 @@ func (h *AuthHandler) Login(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
+	log := helpers.MapLog(c)
+	log.Module = domain.AuthModule
 
 	res, err := h.AUsecase.Login(ctx, cred)
 	if err != nil {
+		h.Logger.Error(log, err)
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
 	}
+
+	log.AdditionalInfo["email_user_logged_in"] = cred.Email
+	h.Logger.Info(log, "OK")
 
 	return c.JSON(http.StatusOK, &res)
 }

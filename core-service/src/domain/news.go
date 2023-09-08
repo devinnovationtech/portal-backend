@@ -9,6 +9,10 @@ import (
 
 const ConstNews string = "news"
 
+var (
+	NewsModule = "NEWS"
+)
+
 // News ...
 type News struct {
 	ID          int64      `json:"id"`

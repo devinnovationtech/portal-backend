@@ -14,11 +14,13 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	middl "github.com/jabardigitalservice/portal-jabar-services/core-service/src/middleware"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/policies"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 )
 
 // NewsHandler ...
 type NewsHandler struct {
 	CUsecase domain.NewsUsecase
+	Logger   *utils.Logrus
 }
 
 func isRequestValid(n *domain.StoreNewsRequest) (bool, error) {
@@ -31,9 +33,10 @@ func isRequestValid(n *domain.StoreNewsRequest) (bool, error) {
 }
 
 // NewNewsHandler will initialize the contents/ resources endpoint
-func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase) {
+func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase, logger *utils.Logrus) {
 	handler := &NewsHandler{
 		CUsecase: us,
+		Logger:   logger,
 	}
 	permManageNews := domain.PermissionManageNews
 
@@ -150,6 +153,9 @@ func (h *NewsHandler) Store(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
 	}
 
+	log := helpers.MapLog(c)
+	log.Module = domain.NewsModule
+
 	var ok bool
 	if ok, err = isRequestValid(n); !ok {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -165,12 +171,17 @@ func (h *NewsHandler) Store(c echo.Context) (err error) {
 	ctx := c.Request().Context()
 	err = h.CUsecase.Store(ctx, n)
 	if err != nil {
+		h.Logger.Error(log, err)
 		return err
 	}
 
 	// Copy slice to slice
 	res := []domain.DetailNewsResponse{}
 	copier.Copy(&res, &n)
+
+	log.AdditionalInfo["news_user_created"] = auth.Name
+	log.AdditionalInfo["news_opd_created"] = auth.Unit.Name.String
+	h.Logger.Info(log, "OK")
 
 	return c.JSON(http.StatusCreated, res)
 }
