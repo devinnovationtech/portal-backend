@@ -87,7 +87,7 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger utils.Lo
 	newAppHandler(e)
 	_areaHttpDelivery.NewAreaHandler(v1, r, u.AreaUcase)
 	_newsHttpDelivery.NewNewsHandler(v1, r, u.NewsUcase, &logger)
-	_newsHttpDelivery.NewPublicNewsHandler(p, u.NewsUcase)
+	_newsHttpDelivery.NewPublicNewsHandler(p, u.NewsUcase, &logger)
 	_informationHttpDelivery.NewInformationHandler(v1, r, u.InformationUcase)
 	_unitHttpDelivery.NewUnitHandler(v1, r, u.UnitUcase)
 	_eventHttpDelivery.NewEventHandler(v1, r, u.EventUcase)

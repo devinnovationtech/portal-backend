@@ -10,16 +10,21 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/domain"
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/helpers"
 	middl "github.com/jabardigitalservice/portal-jabar-services/core-service/src/middleware"
+	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/utils"
 )
 
 // PublicNewsHandler ...
 type PublicNewsHandler struct {
 	CUsecase domain.NewsUsecase
+	Logger   *utils.Logrus
 }
 
 // NewPublicNewsHandler will initialize the /public/news handler
-func NewPublicNewsHandler(p *echo.Group, us domain.NewsUsecase) {
-	handler := &PublicNewsHandler{CUsecase: us}
+func NewPublicNewsHandler(p *echo.Group, us domain.NewsUsecase, logger *utils.Logrus) {
+	handler := &PublicNewsHandler{
+		CUsecase: us,
+		Logger:   logger,
+	}
 	p.GET("/news", handler.FetchNews, middl.VerifyCache())
 	p.GET("/news/slug/:slug", handler.GetBySlug, middl.VerifyCache())
 	p.GET("/news/slug/:slug/view", handler.GetViewsBySlug)
@@ -150,10 +155,21 @@ func (h *PublicNewsHandler) AddShare(c echo.Context) error {
 	id := int64(idP)
 	ctx := c.Request().Context()
 
+	news, err := h.CUsecase.GetByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	log := helpers.MapLog(c)
+	log.Module = domain.NewsModule
+
 	err = h.CUsecase.AddShare(ctx, id)
 	if err != nil {
 		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
 	}
+
+	log.AdditionalInfo["news_shared"] = news.Link
+	h.Logger.Info(log, "OK")
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "successfully add share count",

@@ -47,7 +47,6 @@ func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase, logger 
 	r.DELETE("/news/:id", handler.Delete, middl.CheckPermission(permManageNews))
 	r.PATCH("/news/:id/status", handler.UpdateStatus)
 	r.GET("/news/tabs", handler.TabStatus)
-	e.PATCH("/news/:id/share", handler.AddShare)
 }
 
 // FetchNews will fetch the content based on given params
@@ -124,28 +123,6 @@ func (h *NewsHandler) TabStatus(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, &domain.ResultData{Data: &tabs})
 }
 
-// AddShare counter to share
-func (h *NewsHandler) AddShare(c echo.Context) error {
-	// FIXME: Check and verify the recaptcha response token.
-
-	idP, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
-	}
-
-	id := int64(idP)
-	ctx := c.Request().Context()
-
-	err = h.CUsecase.AddShare(ctx, id)
-	if err != nil {
-		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
-	}
-
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "successfully add share count",
-	})
-}
-
 // Store will store the news by given request body
 func (h *NewsHandler) Store(c echo.Context) (err error) {
 	n := new(domain.StoreNewsRequest)
@@ -181,6 +158,8 @@ func (h *NewsHandler) Store(c echo.Context) (err error) {
 
 	log.AdditionalInfo["news_user_created"] = auth.Name
 	log.AdditionalInfo["news_opd_created"] = auth.Unit.Name.String
+	log.AdditionalInfo["news_status_created"] = n.Status
+
 	h.Logger.Info(log, "OK")
 
 	return c.JSON(http.StatusCreated, res)
@@ -230,6 +209,9 @@ func (h *NewsHandler) UpdateStatus(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, err.Error())
 	}
 
+	log := helpers.MapLog(c)
+	log.Module = domain.NewsModule
+
 	if err = validator.New().Struct(n); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
@@ -244,6 +226,9 @@ func (h *NewsHandler) UpdateStatus(c echo.Context) (err error) {
 	if err != nil {
 		return err
 	}
+
+	log.AdditionalInfo["news_updated_status"] = n.Status
+	h.Logger.Info(log, "OK")
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "successfully update status",
