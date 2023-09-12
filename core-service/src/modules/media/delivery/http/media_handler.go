@@ -29,9 +29,9 @@ var domainNames = []string{
 	"archives",
 }
 
-var domainTypes = []string{
-	"img",
-	"docs",
+var domainTypes = map[string][]string{
+	"img":  {"png", "jpg", "jpeg", "svg"},
+	"docs": {"docs", "pdf", "xlxs", "xls", "csv", "doc"},
 }
 
 // NewMediaHandler will create a new MediaHandler
@@ -51,9 +51,8 @@ func (h *MediaHandler) Store(c echo.Context) (err error) {
 		DomainType:    c.QueryParam("type"),
 		IsSetAliasUrl: c.QueryParam("is_set_alias_url"),
 	}
-	if domainTypeExists, _ := helpers.InArray(params.DomainType, domainTypes); !domainTypeExists {
-		params.DomainType = "img"
-	}
+
+	params.DomainType = h.getDomainType(params.DomainType)
 
 	domainExists, domainIndex := helpers.InArray(params.Domain, domainNames)
 	params.Domain = ""
@@ -107,4 +106,23 @@ func (h *MediaHandler) Delete(c echo.Context) (err error) {
 	}
 
 	return c.JSON(http.StatusOK, res)
+}
+
+func (h *MediaHandler) getDomainType(domainType string) string {
+	domainTypeExistsImg, _ := helpers.InArray(domainType, domainTypes["img"])
+	domainTypeExistsDocs, _ := helpers.InArray(domainType, domainTypes["docs"])
+
+	if !domainTypeExistsDocs && !domainTypeExistsImg {
+		domainType = "img"
+	}
+
+	if domainTypeExistsImg {
+		domainType = "img"
+	}
+
+	if domainTypeExistsDocs {
+		domainType = "docs"
+	}
+
+	return domainType
 }
