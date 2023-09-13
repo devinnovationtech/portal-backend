@@ -47,6 +47,7 @@ func NewNewsHandler(e *echo.Group, r *echo.Group, us domain.NewsUsecase, logger 
 	r.DELETE("/news/:id", handler.Delete, middl.CheckPermission(permManageNews))
 	r.PATCH("/news/:id/status", handler.UpdateStatus)
 	r.GET("/news/tabs", handler.TabStatus)
+	e.PATCH("/news/:id/share", handler.AddShare)
 }
 
 // FetchNews will fetch the content based on given params
@@ -251,4 +252,37 @@ func (h *NewsHandler) Delete(c echo.Context) (err error) {
 	}
 
 	return c.NoContent(http.StatusNoContent)
+}
+
+// AddShare counter to share
+func (h *NewsHandler) AddShare(c echo.Context) error {
+	// FIXME: Check and verify the recaptcha response token.
+
+	idP, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusNotFound, domain.ErrNotFound.Error())
+	}
+
+	id := int64(idP)
+	ctx := c.Request().Context()
+
+	news, err := h.CUsecase.GetByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	log := helpers.MapLog(c)
+	log.Module = domain.NewsModule
+
+	err = h.CUsecase.AddShare(ctx, id)
+	if err != nil {
+		return c.JSON(helpers.GetStatusCode(err), helpers.ResponseError{Message: err.Error()})
+	}
+
+	log.AdditionalInfo["news_shared"] = news.Link
+	h.Logger.Info(log, "OK")
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "successfully add share count",
+	})
 }
