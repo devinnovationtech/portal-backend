@@ -8,6 +8,10 @@ import (
 	"github.com/jabardigitalservice/portal-jabar-services/core-service/src/config"
 )
 
+var (
+	MasterDataPublicationModule = "MASTER-DATA-PUBLICATION"
+)
+
 type MasterDataPublication struct {
 	ID                    int64                  `json:"id"`
 	DefaultInformation    DefaultInformation     `json:"default_information"`

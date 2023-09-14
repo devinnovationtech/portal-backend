@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	ArchiveStatus = "ARCHIVE"
-	PublishStatus = "PUBLISH"
+	ArchiveStatus           = "ARCHIVE"
+	PublishStatus           = "PUBLISH"
+	MasterDataServiceModule = "MASTER-DATA-SERVICE"
 )
 
 type MasterDataService struct {

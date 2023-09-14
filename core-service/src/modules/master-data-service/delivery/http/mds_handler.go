@@ -19,13 +19,15 @@ import (
 type MasterDataServiceHandler struct {
 	MdsUcase domain.MasterDataServiceUsecase
 	apm      *utils.Apm
+	Logger   *utils.Logrus
 }
 
 // NewMasterDataServiceHandler will create a new MasterDataServiceHandler
-func NewMasterDataServiceHandler(r *echo.Group, sp domain.MasterDataServiceUsecase, apm *utils.Apm) {
+func NewMasterDataServiceHandler(r *echo.Group, sp domain.MasterDataServiceUsecase, apm *utils.Apm, logger *utils.Logrus) {
 	handler := &MasterDataServiceHandler{
 		MdsUcase: sp,
 		apm:      apm,
+		Logger:   logger,
 	}
 	r.POST("/master-data-services", handler.Store)
 	r.GET("/master-data-services", handler.Fetch)
@@ -39,6 +41,8 @@ func NewMasterDataServiceHandler(r *echo.Group, sp domain.MasterDataServiceUseca
 func (h *MasterDataServiceHandler) Store(c echo.Context) (err error) {
 	// get a req context
 	ctx := c.Request().Context()
+	log := helpers.MapLog(c)
+	log.Module = domain.MasterDataServiceModule
 
 	// bind a request body
 	body, err := h.bindRequest(c)
@@ -60,6 +64,11 @@ func (h *MasterDataServiceHandler) Store(c echo.Context) (err error) {
 	result := map[string]interface{}{
 		"message": "CREATED.",
 	}
+
+	log.AdditionalInfo["master_data_created_by_opd"] = au.Unit.Name.String
+	log.AdditionalInfo["master_data_status_created"] = body.Status
+
+	h.Logger.Info(log, "OK")
 
 	return c.JSON(http.StatusCreated, result)
 }

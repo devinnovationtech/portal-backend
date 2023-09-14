@@ -118,8 +118,8 @@ func NewHandler(cfg *config.Config, apm *utils.Apm, u *Usecases, logger utils.Lo
 	_governmentAffairDelivery.NewGovernmentAffairHandler(r, u.GovernmentAffairUsecase, apm)
 	_spbeRalsDelivery.NewSpbeRalsHandler(r, u.SpbeRalsUsecase, apm)
 	_uptdCabdinDelivery.NewUptdCabdinHandler(r, u.UptdCabdinUsecase, apm)
-	_masterDataServiceDelivery.NewMasterDataServiceHandler(r, u.MasterDataServiceUsecase, apm)
-	_masterDataPublicationDelivery.NewMasterDataPublicationHandler(p, r, u.MasterDataPublicationUsecase, apm)
+	_masterDataServiceDelivery.NewMasterDataServiceHandler(r, u.MasterDataServiceUsecase, apm, &logger)
+	_masterDataPublicationDelivery.NewMasterDataPublicationHandler(p, r, u.MasterDataPublicationUsecase, apm, &logger)
 	_externalHttpDelivery.NewExternalHandler(p, &logger)
 
 	log.Fatal(e.Start(viper.GetString("APP_ADDRESS")))

@@ -20,13 +20,15 @@ import (
 type MasterDataPublicationHandler struct {
 	MdpUcase domain.MasterDataPublicationUsecase
 	apm      *utils.Apm
+	Logger   *utils.Logrus
 }
 
 // NewMasterDataPublicationHandler will create a new MasterDataPublicationHandler
-func NewMasterDataPublicationHandler(p *echo.Group, r *echo.Group, sp domain.MasterDataPublicationUsecase, apm *utils.Apm) {
+func NewMasterDataPublicationHandler(p *echo.Group, r *echo.Group, sp domain.MasterDataPublicationUsecase, apm *utils.Apm, logger *utils.Logrus) {
 	handler := &MasterDataPublicationHandler{
 		MdpUcase: sp,
 		apm:      apm,
+		Logger:   logger,
 	}
 	r.POST("/master-data-publications", handler.Store)
 	r.GET("/master-data-publications", handler.Fetch)
@@ -41,6 +43,8 @@ func NewMasterDataPublicationHandler(p *echo.Group, r *echo.Group, sp domain.Mas
 func (h *MasterDataPublicationHandler) Store(c echo.Context) (err error) {
 	// get a req context
 	ctx := c.Request().Context()
+	log := helpers.MapLog(c)
+	log.Module = domain.MasterDataPublicationModule
 
 	// bind a request body
 	body, err := h.bindRequest(c)
@@ -61,6 +65,10 @@ func (h *MasterDataPublicationHandler) Store(c echo.Context) (err error) {
 	res := map[string]interface{}{
 		"message": "CREATED.",
 	}
+
+	log.AdditionalInfo["publication_created_by_opd"] = au.Unit.Name.String
+	log.AdditionalInfo["publication_status_created"] = body.Status
+	h.Logger.Info(log, "OK")
 
 	return c.JSON(http.StatusCreated, res)
 }
